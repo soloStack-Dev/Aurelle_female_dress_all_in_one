@@ -1,10 +1,14 @@
 import type { NextConfig } from "next";
 
+// Pin the workspace root so Turbopack does not walk up to unrelated lockfiles.
+const projectRoot = process.cwd();
+
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  outputFileTracingRoot: projectRoot,
   turbopack: {
+    root: projectRoot,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="64" viewBox="0 0 1600 64" fill="none" role="presentation">
+  <defs>
+    <linearGradient id="dividerRule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6c1b2b" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#d4552d" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#6c1b2b" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <line x1="80" y1="32" x2="716" y2="32" stroke="url(#dividerRule)" stroke-width="1.2">
+    <animate attributeName="x2" values="700;744;700" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="7s" repeatCount="indefinite"/>
+  </line>
+  <g transform="translate(800 32)">
+    <path d="M0 -9 L9 0 L0 9 L-9 0 Z" fill="none" stroke="#d4552d" stroke-width="1.4">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="90" dur="9s" repeatCount="indefinite"/>
+      <animate attributeName="stroke-opacity" values="0.55;1;0.55" dur="4.5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <line x1="884" y1="32" x2="1520" y2="32" stroke="url(#dividerRule)" stroke-width="1.2">
+    <animate attributeName="x1" values="856;900;856" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="7s" repeatCount="indefinite"/>
+  </line>
+</svg>
