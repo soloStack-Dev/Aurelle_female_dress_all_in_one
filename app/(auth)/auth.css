@@ -1,0 +1,93 @@
+.auth-signup {
+  color: #111111;
+  background: #e9ecf2;
+  font-family: var(--font-onest), system-ui, sans-serif;
+}
+
+.auth-signup-gradient {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(60% 50% at 100% 0%, #efa56f 0%, transparent 70%),
+    radial-gradient(55% 45% at 0% 0%, #e3cdb4 0%, transparent 70%),
+    radial-gradient(70% 60% at 50% 70%, #fad38f 0%, transparent 75%),
+    radial-gradient(50% 45% at 100% 100%, #d8c8b6 0%, transparent 70%),
+    #f4b67e;
+}
+
+.auth-signup-gradient::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 42% at 68% 26%, rgba(250, 211, 143, 0.85) 0%, transparent 65%),
+    radial-gradient(38% 38% at 26% 74%, rgba(244, 182, 126, 0.7) 0%, transparent 70%),
+    radial-gradient(34% 34% at 90% 88%, rgba(216, 200, 182, 0.75) 0%, transparent 70%);
+  filter: blur(26px);
+  animation: auth-gradient-drift 20s ease-in-out infinite alternate;
+}
+
+.auth-signup-gradient > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-legal {
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+}
+
+.auth-create {
+  color: #121214;
+  background-color: #c9c3be;
+  background-image:
+    radial-gradient(70% 90% at 82% 8%, rgba(248, 246, 243, 0.48), transparent 62%),
+    radial-gradient(55% 65% at 12% 88%, rgba(179, 156, 138, 0.32), transparent 70%);
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+}
+
+.auth-create-window {
+  box-shadow: 0 32px 90px -44px rgba(33, 26, 21, 0.55);
+}
+
+.auth-create-quote {
+  font-family: var(--font-hanken), var(--font-manrope), system-ui, sans-serif;
+}
+
+.auth-page-mesh {
+  mask-image: linear-gradient(to top, #000 20%, rgba(0, 0, 0, 0.7) 62%, transparent 100%);
+}
+
+.auth-testimonial-mesh {
+  mix-blend-mode: soft-light;
+  opacity: 0.72;
+  mask-image: linear-gradient(to top, #000 10%, #000 52%, transparent 94%);
+}
+
+.auth-testimonial-photo {
+  filter: saturate(0.82) contrast(0.98);
+}
+
+.auth-create-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.35) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to top, #000, transparent 80%);
+}
+
+@keyframes auth-gradient-drift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(2%, 2%, 0) scale(1.08);
+  }
+}
+
+@media (max-width: 767px) {
+  .auth-signup-gradient::before {
+    animation: none;
+  }
+}

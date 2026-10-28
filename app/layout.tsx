@@ -3,6 +3,7 @@ import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 
 import SmoothScroll from "@/components/providers/SmoothScroll";
+import AppChrome from "@/components/layout/AppChrome";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
 import ScrollProgress from "@/components/ui/ScrollProgress";
@@ -108,10 +109,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
 
         <SmoothScroll>
-          <ScrollProgress />
-          <SiteHeader />
-          <main id="main">{children}</main>
-          <SiteFooter />
+          <AppChrome
+            header={<SiteHeader />}
+            progress={<ScrollProgress />}
+            footer={<SiteFooter />}
+          >
+            {children}
+          </AppChrome>
         </SmoothScroll>
       </body>
     </html>

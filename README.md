@@ -78,6 +78,7 @@ The build is equally focused on the engineering behind the visuals:
 | **Membership page** | Three tiers, a comparison table, FAQ accordion and plan-aware contact links. |
 | **Journal** | Three editorial posts with static generation, previous/next navigation, campaign galleries and article metadata. |
 | **Atelier contact** | Server-rendered enquiry form, plan prefill from `?plan=`, topic selector, validation, demo success state, Leaflet/OpenStreetMap map and gallery. |
+| **Auth flows** | Two distinct signup concepts: an animated split-frame carousel journey at `/signup` and a browser-window account screen with wireframe terrain at `/create-account`. Includes validated demo forms, password controls, social notices and supporting login/legal pages. |
 | **Motion** | GSAP + ScrollTrigger for scroll and load choreography, Lenis for smooth scrolling, Motion for UI transitions, anime.js for the sunburst accent. Every layer respects `prefers-reduced-motion`. |
 | **SEO** | Metadata factory, canonical URLs, Open Graph and Twitter cards, JSON-LD, sitemap, robots and web manifest. |
 | **Error telemetry** | Error boundaries report runtime failures to `POST /api/log-error`, which appends JSON lines to `ErrorLog/runtime-errors.log` locally. |
@@ -97,6 +98,11 @@ The build is equally focused on the engineering behind the visuals:
 | `/blog/postcard-from-positano` | Journal article |
 | `/pricing` | Membership tiers, comparison table and FAQ |
 | `/contact` | Enquiry form, atelier details and Leaflet map |
+| `/signup` | "Build Your Flow" split-frame signup concept |
+| `/create-account` | Browser-window account signup concept |
+| `/login` | Demo login form |
+| `/terms` | Terms of Service |
+| `/privacy` | Privacy Policy |
 | `/sitemap.xml` | Generated sitemap |
 | `/robots.txt` | Generated crawler rules |
 | `/manifest.webmanifest` | Installable web app metadata |
@@ -117,8 +123,9 @@ The build is equally focused on the engineering behind the visuals:
 | Decorative motion | **anime.js 4.5** | Slow sunburst rotation |
 | State | **Zustand 5** | Shared bag and wishlist state |
 | Map | **Leaflet 1.9 + OpenStreetMap** | Interactive atelier map with custom marker |
-| Icons | **react-icons 5** | Feather icon set |
-| Fonts | **next/font** | Self-hosted Bodoni Moda and Manrope, zero runtime font requests |
+| Icons | **react-icons 5** | Feather icon set and auth social marks |
+| Forms | **react-hook-form 7 + Zod 4** | Accessible validation, touched state and demo submission states |
+| Fonts | **next/font** | Self-hosted Bodoni Moda, Manrope and auth-specific Onest, Inter Tight and Hanken Grotesk |
 | Tooling | **Bun 1.4.2, ESLint 9, eslint-config-next** | Install, scripts, linting and production builds |
 
 > The hero originally used React Three Fiber. It was replaced with a framework-free Three.js scene so the render loop could use the current `THREE.Timer` API without patching a dependency. See [Error 007](ErrorLog/007-three-clock-deprecated.md).
@@ -234,21 +241,24 @@ my-app/
 │   ├── collection/            # catalogue page and quick-view Suspense host
 │   ├── contact/               # enquiry page, form and atelier map
 │   ├── pricing/               # membership tiers and comparison
+│   ├── (auth)/                # signup, create-account, login and legal routes
 │   ├── globals.css            # tokens, typography, effects, Leaflet overrides
 │   ├── layout.tsx             # fonts, metadata, header, footer, JSON-LD
 │   ├── page.tsx               # home page + product JSON-LD
 │   └── sitemap.ts             # generated route inventory
 ├── components/
+│   ├── auth/                  # signup frames, account form, social and legal UI
 │   ├── collection/            # filter browser and URL-driven quick view
 │   ├── contact/               # contact form and Leaflet integration
 │   ├── hero/                  # browser capability gate for the 3D scene
 │   ├── home/                  # editorial home sections
-│   ├── layout/                # header, footer, page header
+│   ├── layout/                # header, footer, auth-aware chrome
 │   ├── providers/             # Lenis + GSAP scroll provider
-│   ├── three/                 # framework-free Three.js hero scene
+│   ├── three/                 # hero scene and wireframe terrain
 │   └── ui/                    # cards, buttons, reveal, accordion, sunburst
 ├── lib/
 │   ├── data/site.ts           # site copy, products, posts, collections
+│   ├── data/auth.ts           # auth carousel and testimonial content
 │   ├── gsap.ts                # GSAP + ScrollTrigger registration
 │   ├── report-error.ts        # client error reporter
 │   ├── seo.ts                 # metadata and JSON-LD factories
@@ -278,6 +288,7 @@ my-app/
 - Root metadata templates plus an explicit full home title (`AURELLE - Own your summer.`).
 - Organization, WebSite, CollectionPage/ItemList and article structured data.
 - Generated `sitemap.xml`, `robots.txt` and `manifest.webmanifest`.
+- Auth and legal routes are marked `noindex, nofollow` so demo account pages stay out of search results.
 - Semantic heading order, descriptive link labels and meaningful alt text.
 - `metadataBase` configured in `app/layout.tsx`; update `site.url` in `lib/data/site.ts` before deploying to a real domain.
 
@@ -294,6 +305,7 @@ Every issue found during development is recorded in [`ErrorLog/`](ErrorLog/). Th
 | [005](ErrorLog/005-contact-form-set-state-in-effect.md) | Contact form copied `?plan=` into state inside a mount effect | External-store URL read + keyed fields; real form HTML is server-rendered |
 | [006](ErrorLog/006-home-title-missing-brand.md) | Home title lost the AURELLE brand because templates do not apply to the same segment | Explicit full title in home metadata |
 | [007](ErrorLog/007-three-clock-deprecated.md) | `THREE.Clock` deprecation warning from R3F's internal render clock | Replaced R3F with a framework-free Three.js scene using `THREE.Timer` |
+| [008](ErrorLog/008-auth-breakpoints-and-notch.md) | Auth notch, split breakpoints, mobile padding and desktop H1 wrapping | Anchored the notch to the frame, restored tablet layouts, tuned card proportions and form width |
 
 <details>
 <summary><strong>001 - Dependency misconfiguration</strong></summary>
