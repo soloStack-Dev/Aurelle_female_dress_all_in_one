@@ -79,7 +79,7 @@ The build is equally focused on the engineering behind the visuals:
 | **Membership page** | Three tiers, a comparison table, FAQ accordion and plan-aware contact links. |
 | **Journal** | Three editorial posts with static generation, previous/next navigation, campaign galleries and article metadata. |
 | **Atelier contact** | Server-rendered enquiry form, plan prefill from `?plan=`, topic selector, validation, demo success state, Leaflet/OpenStreetMap map and gallery. |
-| **Auth flows** | Two distinct signup concepts: an animated split-frame carousel journey at `/signup` and a browser-window account screen with wireframe terrain at `/create-account`. Validated forms create a browser-local session, then the header swaps its Sign In/Sign Up previews for search, favorites, profile and cart controls. Collection, About, Journal, Membership and Contact redirect to login with a safe return path. |
+| **Auth flows** | Two distinct signup concepts: an animated split-frame carousel journey at `/signup` and a browser-window account screen with wireframe terrain at `/create-account`. Validated forms create a browser-local session, then the header swaps its Sign In/Sign Up previews for search, favorites, profile and cart controls. The signup carousel and login layout also feature the supplied page imagery. Collection, About, Journal, Membership and Contact redirect to login with a safe return path. |
 | **Motion** | GSAP + ScrollTrigger for scroll and load choreography, Lenis for smooth scrolling, Motion for UI transitions, anime.js for the sunburst accent. Every layer respects `prefers-reduced-motion`. |
 | **SEO** | Metadata factory, canonical URLs, Open Graph and Twitter cards, JSON-LD, sitemap, robots and web manifest. |
 | **Error telemetry** | Error boundaries report runtime failures to `POST /api/log-error`, which appends JSON lines to `ErrorLog/runtime-errors.log` locally. |
@@ -268,8 +268,9 @@ my-app/
 │   ├── seo.ts                 # metadata and JSON-LD factories
 │   ├── store/auth.ts          # browser-local persisted demo session
 │   └── store/cart.ts          # in-memory Zustand bag + wishlist
-├── Asserts/                   # supplied auth reference imagery
+├── Asserts/                   # supplied page reference imagery
 ├── public/
+│   ├── Asserts/               # auth page imagery used by the app
 │   ├── images/                # hero, collection, product and supplied assets
 │   └── icon.svg               # favicon
 ├── ErrorLog/                  # numbered development error records

@@ -11,6 +11,10 @@ export type AuthTestimonial = AuthSlide & {
 
 export const signupSlides: AuthSlide[] = [
   {
+    src: "/Asserts/login-page-img.jpg",
+    alt: "AURELLE sign-in page editorial artwork",
+  },
+  {
     src: "/images/hero/hero-model.jpg",
     alt: "Aurelle campaign portrait in warm evening light",
   },

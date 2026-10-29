@@ -13,8 +13,6 @@ import {
   FiTrash2,
   FiX,
 } from "react-icons/fi";
-import signInPreview from "@/Asserts/create-account-page-img.jpg";
-import signUpPreview from "@/Asserts/login-page-img.jpg";
 import AccountMenu from "@/components/layout/AccountMenu";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
 import { authHref, isProtectedPath } from "@/lib/auth-navigation";
@@ -177,7 +175,7 @@ export default function SiteHeader() {
                 >
                   <span className="relative hidden size-8 shrink-0 overflow-hidden rounded-full bg-sand sm:block">
                     <Image
-                      src={signInPreview}
+                      src="/Asserts/create-account-page-img.jpg"
                       alt=""
                       fill
                       sizes="32px"
@@ -192,7 +190,7 @@ export default function SiteHeader() {
                 >
                   <span className="relative hidden size-8 shrink-0 overflow-hidden rounded-full bg-ember/30 sm:block">
                     <Image
-                      src={signUpPreview}
+                      src="/Asserts/login-page-img.jpg"
                       alt=""
                       fill
                       sizes="32px"
