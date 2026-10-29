@@ -25,7 +25,7 @@
   <code>Next.js 16</code> · <code>React 19</code> · <code>TypeScript</code> · <code>Tailwind v4</code> · <code>Three.js</code> · <code>GSAP</code> · <code>Leaflet</code>
 </p>
 
-> **Demo scope** — AURELLE is a front-end concept, not a live shop. There is no payment provider, authentication, database, email service or persistent cart. Fictional contact details, social links and inventory are used throughout.
+> **Demo scope** — AURELLE is a front-end concept, not a live shop. There is no payment provider, authentication backend, database, email service or persistent cart. Protected pages use a browser-local demo session; fictional contact details, social links and inventory are used throughout.
 
 <details>
 <summary><strong>Contents</strong></summary>
@@ -58,6 +58,7 @@ The build is equally focused on the engineering behind the visuals:
 - A single motion system split cleanly between GSAP/ScrollTrigger, Lenis, Motion and anime.js.
 - URL-driven collection filtering and quick views that keep the product grid in the server-rendered HTML.
 - A server-rendered contact form with URL prefill, and a real Leaflet map with an accessible fallback.
+- A hydration-safe demo auth gate with validated return paths and an editorial header that adapts to session state.
 - Strict TypeScript, React 19 lint rules, Next.js 16 Cache Components, and a documented error log from the development process.
 
 <p align="center">
@@ -78,7 +79,7 @@ The build is equally focused on the engineering behind the visuals:
 | **Membership page** | Three tiers, a comparison table, FAQ accordion and plan-aware contact links. |
 | **Journal** | Three editorial posts with static generation, previous/next navigation, campaign galleries and article metadata. |
 | **Atelier contact** | Server-rendered enquiry form, plan prefill from `?plan=`, topic selector, validation, demo success state, Leaflet/OpenStreetMap map and gallery. |
-| **Auth flows** | Two distinct signup concepts: an animated split-frame carousel journey at `/signup` and a browser-window account screen with wireframe terrain at `/create-account`. Includes validated demo forms, password controls, social notices and supporting login/legal pages. |
+| **Auth flows** | Two distinct signup concepts: an animated split-frame carousel journey at `/signup` and a browser-window account screen with wireframe terrain at `/create-account`. Validated forms create a browser-local session, then the header swaps its Sign In/Sign Up previews for search, favorites, profile and cart controls. Collection, About, Journal, Membership and Contact redirect to login with a safe return path. |
 | **Motion** | GSAP + ScrollTrigger for scroll and load choreography, Lenis for smooth scrolling, Motion for UI transitions, anime.js for the sunburst accent. Every layer respects `prefers-reduced-motion`. |
 | **SEO** | Metadata factory, canonical URLs, Open Graph and Twitter cards, JSON-LD, sitemap, robots and web manifest. |
 | **Error telemetry** | Error boundaries report runtime failures to `POST /api/log-error`, which appends JSON lines to `ErrorLog/runtime-errors.log` locally. |
@@ -108,6 +109,8 @@ The build is equally focused on the engineering behind the visuals:
 | `/manifest.webmanifest` | Installable web app metadata |
 | `/api/log-error` | Local runtime error sink |
 
+> **Protected routes** — `/collection`, `/about`, `/blog`, `/pricing` and `/contact` require a demo session. Unauthenticated visitors are sent to `/login?next=...`; the return path is validated to stay on the same origin and cannot loop back to an auth route. Signing in or creating an account stores only a name and email in `localStorage` under `aurelle-auth`.
+
 ## Tech stack
 
 | Layer | Technology | Role |
@@ -121,7 +124,7 @@ The build is equally focused on the engineering behind the visuals:
 | Smooth scroll | **Lenis 1.3** | Inertia scrolling with GSAP ticker integration |
 | UI motion | **Motion 14** | Quick view, mobile menu and bag transitions |
 | Decorative motion | **anime.js 4.5** | Slow sunburst rotation |
-| State | **Zustand 5** | Shared bag and wishlist state |
+| State | **Zustand 5** | Shared bag, wishlist and browser-local auth state |
 | Map | **Leaflet 1.9 + OpenStreetMap** | Interactive atelier map with custom marker |
 | Icons | **react-icons 5** | Feather icon set and auth social marks |
 | Forms | **react-hook-form 7 + Zod 4** | Accessible validation, touched state and demo submission states |
@@ -252,17 +255,20 @@ my-app/
 │   ├── contact/               # contact form and Leaflet integration
 │   ├── hero/                  # browser capability gate for the 3D scene
 │   ├── home/                  # editorial home sections
-│   ├── layout/                # header, footer, auth-aware chrome
+│   ├── layout/                # header, account menu, footer, auth-aware chrome
 │   ├── providers/             # Lenis + GSAP scroll provider
 │   ├── three/                 # hero scene and wireframe terrain
 │   └── ui/                    # cards, buttons, reveal, accordion, sunburst
 ├── lib/
 │   ├── data/site.ts           # site copy, products, posts, collections
 │   ├── data/auth.ts           # auth carousel and testimonial content
+│   ├── auth-navigation.ts     # protected routes and safe auth return paths
 │   ├── gsap.ts                # GSAP + ScrollTrigger registration
 │   ├── report-error.ts        # client error reporter
 │   ├── seo.ts                 # metadata and JSON-LD factories
+│   ├── store/auth.ts          # browser-local persisted demo session
 │   └── store/cart.ts          # in-memory Zustand bag + wishlist
+├── Asserts/                   # supplied auth reference imagery
 ├── public/
 │   ├── images/                # hero, collection, product and supplied assets
 │   └── icon.svg               # favicon
@@ -306,6 +312,7 @@ Every issue found during development is recorded in [`ErrorLog/`](ErrorLog/). Th
 | [006](ErrorLog/006-home-title-missing-brand.md) | Home title lost the AURELLE brand because templates do not apply to the same segment | Explicit full title in home metadata |
 | [007](ErrorLog/007-three-clock-deprecated.md) | `THREE.Clock` deprecation warning from R3F's internal render clock | Replaced R3F with a framework-free Three.js scene using `THREE.Timer` |
 | [008](ErrorLog/008-auth-breakpoints-and-notch.md) | Auth notch, split breakpoints, mobile padding and desktop H1 wrapping | Anchored the notch to the frame, restored tablet layouts, tuned card proportions and form width |
+| [009](ErrorLog/009-browser-auth-gate.md) | Client-only session caused control flicker, a protected-route guard race on sign-out and a narrow-screen header overflow risk | Hydration-gated header, sanitized `next` paths, guard-aware sign-out, responsive skeleton and compact icon targets |
 
 <details>
 <summary><strong>001 - Dependency misconfiguration</strong></summary>
@@ -360,7 +367,8 @@ three r183 deprecates `Clock`, but `@react-three/fiber@9.8.2` still constructs `
 
 ## Demo boundaries
 
-- Cart and wishlist are **in-memory** and reset on reload. There is no checkout, payment, authentication or inventory service.
+- Cart and wishlist are **in-memory** and reset on reload. There is no checkout, payment or inventory service.
+- Authentication is a **browser-local demo**: any valid email and password sign in, and only a display name plus email are persisted. There is no server session, password verification or account database. Use the profile menu to clear the session, or remove the `aurelle-auth` local-storage key.
 - Contact and newsletter submissions are **simulated** with explicit UI copy; no email is sent or stored.
 - Products, prices, membership tiers and journal articles are **fictional demo content**.
 - The atelier address, phone number, coordinates and social links are **placeholders**.

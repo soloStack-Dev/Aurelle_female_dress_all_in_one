@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, useAnimationControls } from "motion/react";
 import { useForm } from "react-hook-form";
 import { FiCheck, FiEye, FiEyeOff } from "react-icons/fi";
 import { z } from "zod";
+import { getAuthNextPath } from "@/lib/auth-navigation";
+import { useAuth } from "@/lib/store/auth";
 import BrandMark from "./BrandMark";
 import SocialButtons from "./SocialButtons";
 import UnderlineField from "./UnderlineField";
@@ -24,6 +27,8 @@ const accountSchema = z.object({
 type AccountValues = z.infer<typeof accountSchema>;
 
 export default function SignupForm() {
+  const router = useRouter();
+  const signIn = useAuth((state) => state.signIn);
   const [status, setStatus] = useState<"idle" | "success">("idle");
   const [notice, setNotice] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +37,6 @@ export default function SignupForm() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<AccountValues>({
     resolver: zodResolver(accountSchema),
@@ -41,11 +45,15 @@ export default function SignupForm() {
     defaultValues: { name: "", email: "", password: "" },
   });
 
-  const onValid = async () => {
-    await new Promise((resolve) => window.setTimeout(resolve, 900));
+  const onValid = async (values: AccountValues) => {
+    await new Promise((resolve) => window.setTimeout(resolve, 800));
+    signIn({
+      name: values.name.trim(),
+      email: values.email.trim(),
+    });
     setStatus("success");
-    setNotice("Demo account created. Nothing was sent or stored.");
-    reset();
+    setNotice("Account created. Opening the atelier...");
+    router.replace(getAuthNextPath());
   };
 
   const onInvalid = () => {
@@ -172,7 +180,8 @@ export default function SignupForm() {
           </motion.form>
 
           <p className="mt-5 text-center text-[10px] leading-relaxed text-[#5f5b57]/80">
-            Demo form — no account is created and no data is stored.
+            Demo session only. Your details stay in this browser and can be cleared
+            by signing out.
           </p>
         </div>
       </div>

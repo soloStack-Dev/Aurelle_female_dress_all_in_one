@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAnimationControls, motion } from "motion/react";
@@ -8,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { FiCheck } from "react-icons/fi";
 import { LuArrowRight, LuMail } from "react-icons/lu";
 import { z } from "zod";
+import { getAuthNextPath } from "@/lib/auth-navigation";
+import { useAuth } from "@/lib/store/auth";
 import PasswordField from "./PasswordField";
 import SocialButtons from "./SocialButtons";
 
@@ -23,6 +26,8 @@ const signupSchema = z.object({
 type SignupValues = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
+  const router = useRouter();
+  const signIn = useAuth((state) => state.signIn);
   const [status, setStatus] = useState<"idle" | "success">("idle");
   const [notice, setNotice] = useState("");
   const controls = useAnimationControls();
@@ -30,7 +35,6 @@ export default function SignupForm() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
@@ -39,11 +43,16 @@ export default function SignupForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onValid = async () => {
-    await new Promise((resolve) => window.setTimeout(resolve, 900));
+  const onValid = async (values: SignupValues) => {
+    await new Promise((resolve) => window.setTimeout(resolve, 800));
+    const email = values.email.trim();
+    signIn({
+      name: email.split("@")[0],
+      email,
+    });
     setStatus("success");
-    setNotice("Demo account created. Nothing was sent or stored.");
-    reset();
+    setNotice("Account created. Opening the atelier...");
+    router.replace(getAuthNextPath());
   };
 
   const onInvalid = () => {

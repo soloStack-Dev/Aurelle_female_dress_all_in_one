@@ -11,12 +11,16 @@ import {
   FiSearch,
   FiShoppingBag,
   FiTrash2,
-  FiUser,
   FiX,
 } from "react-icons/fi";
-import { navigation, products, site } from "@/lib/data/site";
-import { useCart } from "@/lib/store/cart";
+import signInPreview from "@/Asserts/create-account-page-img.jpg";
+import signUpPreview from "@/Asserts/login-page-img.jpg";
+import AccountMenu from "@/components/layout/AccountMenu";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
+import { authHref, isProtectedPath } from "@/lib/auth-navigation";
+import { navigation, products, site } from "@/lib/data/site";
+import { useAuth } from "@/lib/store/auth";
+import { useCart } from "@/lib/store/cart";
 
 /**
  * Global header:
@@ -43,6 +47,8 @@ export default function SiteHeader() {
   const removeFromBag = useCart((state) => state.removeFromBag);
   const bagItems = Object.entries(bag);
   const bagCount = bagItems.reduce((total, [, qty]) => total + qty, 0);
+  const user = useAuth((state) => state.user);
+  const authHydrated = useAuth((state) => state.hydrated);
 
   // Add a frosted background after a small scroll threshold.
   useEffect(() => {
@@ -80,6 +86,11 @@ export default function SiteHeader() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+  const navHref = (href: string) =>
+    !authHydrated || user || !isProtectedPath(href)
+      ? href
+      : authHref("login", href);
+
   return (
     <>
       <a
@@ -108,7 +119,7 @@ export default function SiteHeader() {
             {navigation.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={navHref(item.href)}
                 className={`relative text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors hover:text-ember ${
                   isActive(item.href) ? "text-ember" : "text-ink/70"
                 }`}
@@ -121,48 +132,84 @@ export default function SiteHeader() {
             ))}
           </nav>
 
-          <div className="relative z-10 flex items-center gap-1.5">
-            <Link
-              href="/collection"
-              aria-label="Search the collection"
-              className="grid size-10 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
-            >
-              <FiSearch className="size-4.5" />
-            </Link>
-            <Link
-              href="/pricing"
-              aria-label="Membership and account"
-              className="hidden size-10 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink sm:grid"
-            >
-              <FiUser className="size-4.5" />
-            </Link>
-            <Link
-              href="/collection"
-              aria-label="Wishlist"
-              className="hidden size-10 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink sm:grid"
-            >
-              <FiHeart className="size-4.5" />
-            </Link>
-            <button
-              type="button"
-              onClick={openBag}
-              aria-label={`Open shopping bag, ${bagCount} items`}
-              className="relative grid size-10 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
-            >
-              <FiShoppingBag className="size-4.5" />
-              {bagCount > 0 ? (
-                <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-ember text-[9px] font-bold text-cream">
-                  {bagCount}
-                </span>
-              ) : null}
-            </button>
+          <div className="relative z-10 flex items-center gap-0.5 sm:gap-1.5">
+            {!authHydrated ? (
+              <div
+                className="h-9 w-32 animate-pulse rounded-full bg-ink/5 sm:h-10 sm:w-[208px]"
+                aria-hidden="true"
+              />
+            ) : user ? (
+              <>
+                <Link
+                  href="/collection"
+                  aria-label="Search the collection"
+                  className="grid size-8 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink sm:size-10"
+                >
+                  <FiSearch className="size-4.5" />
+                </Link>
+                <Link
+                  href="/collection"
+                  aria-label="Favorites"
+                  className="grid size-8 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink sm:size-10"
+                >
+                  <FiHeart className="size-4.5" />
+                </Link>
+                <AccountMenu />
+                <button
+                  type="button"
+                  onClick={openBag}
+                  aria-label={`Open cart, ${bagCount} items`}
+                  className="relative grid size-8 place-items-center rounded-full text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink sm:size-10"
+                >
+                  <FiShoppingBag className="size-4.5" />
+                  {bagCount > 0 ? (
+                    <span className="absolute right-0.5 top-0.5 grid size-4 place-items-center rounded-full bg-ember text-[9px] font-bold text-cream">
+                      {bagCount}
+                    </span>
+                  ) : null}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={authHref("login")}
+                  className="group flex h-9 items-center rounded-full border border-ink/15 bg-cream/40 px-3 text-[9px] font-semibold uppercase tracking-[0.12em] text-ink/75 transition-colors hover:border-ink/30 hover:text-ink sm:h-10 sm:gap-2 sm:pl-1 sm:pr-3 sm:text-[10px]"
+                >
+                  <span className="relative hidden size-8 shrink-0 overflow-hidden rounded-full bg-sand sm:block">
+                    <Image
+                      src={signInPreview}
+                      alt=""
+                      fill
+                      sizes="32px"
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </span>
+                  Sign In
+                </Link>
+                <Link
+                  href={authHref("signup")}
+                  className="group flex h-9 items-center rounded-full bg-ink px-3 text-[9px] font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-ember sm:h-10 sm:gap-2 sm:pl-1 sm:pr-3.5 sm:text-[10px]"
+                >
+                  <span className="relative hidden size-8 shrink-0 overflow-hidden rounded-full bg-ember/30 sm:block">
+                    <Image
+                      src={signUpPreview}
+                      alt=""
+                      fill
+                      sizes="32px"
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </span>
+                  Sign Up
+                </Link>
+              </>
+            )}
             <button
               type="button"
               onClick={openMenu}
               aria-label="Open menu"
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              className="grid size-10 place-items-center rounded-full text-ink lg:hidden"
+              className="grid size-8 place-items-center rounded-full text-ink sm:size-10 lg:hidden"
             >
               <FiMenu className="size-5" />
             </button>
@@ -205,7 +252,7 @@ export default function SiteHeader() {
                   transition={{ delay: 0.06 * index + 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Link
-                    href={item.href}
+                    href={navHref(item.href)}
                     className="flex items-baseline justify-between border-b border-ink/10 py-4"
                   >
                     <span className="font-display text-4xl">{item.label}</span>

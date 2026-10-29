@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FiCheck } from "react-icons/fi";
 import { LuArrowRight, LuMail } from "react-icons/lu";
 import { z } from "zod";
+import { getAuthNextPath } from "@/lib/auth-navigation";
+import { useAuth } from "@/lib/store/auth";
 import PasswordField from "./signup/PasswordField";
 import SocialButtons from "./signup/SocialButtons";
 
@@ -22,6 +25,8 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const router = useRouter();
+  const signIn = useAuth((state) => state.signIn);
   const [status, setStatus] = useState<"idle" | "success">("idle");
   const [notice, setNotice] = useState("");
 
@@ -36,10 +41,16 @@ export default function LoginForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onValid = async () => {
-    await new Promise((resolve) => window.setTimeout(resolve, 800));
+  const onValid = async (values: LoginValues) => {
+    await new Promise((resolve) => window.setTimeout(resolve, 700));
+    const email = values.email.trim();
+    signIn({
+      name: email.split("@")[0],
+      email,
+    });
     setStatus("success");
-    setNotice("Demo login successful. No session was created.");
+    setNotice("Signed in. Opening the atelier...");
+    router.replace(getAuthNextPath());
   };
 
   return (
@@ -179,6 +190,11 @@ export default function LoginForm() {
                     className="mt-4 min-h-4 text-center text-[11px] leading-snug text-[#5e4f44]"
                   >
                     {notice}
+                  </p>
+
+                  <p className="mb-3 text-center text-[10px] leading-relaxed text-[#5e4f44]/80">
+                    Demo access: any valid email and password work. Your session is
+                    stored only in this browser.
                   </p>
 
                   <p className="text-center text-[11px] text-[#5e4f44]">
