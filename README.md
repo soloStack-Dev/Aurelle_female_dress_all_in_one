@@ -245,7 +245,10 @@ my-app/
 │   ├── contact/               # enquiry page, form and atelier map
 │   ├── pricing/               # membership tiers and comparison
 │   ├── (auth)/                # signup, create-account, login and legal routes
+│   ├── apple-icon.png         # iOS home-screen icon
+│   ├── favicon.ico            # browser-tab fallback icon
 │   ├── globals.css            # tokens, typography, effects, Leaflet overrides
+│   ├── icon.svg               # scalable AURELLE monogram
 │   ├── layout.tsx             # fonts, metadata, header, footer, JSON-LD
 │   ├── page.tsx               # home page + product JSON-LD
 │   └── sitemap.ts             # generated route inventory
@@ -271,8 +274,8 @@ my-app/
 ├── Asserts/                   # supplied page reference imagery
 ├── public/
 │   ├── Asserts/               # auth page imagery used by the app
-│   ├── images/                # hero, collection, product and supplied assets
-│   └── icon.svg               # favicon
+│   ├── icons/                 # manifest icons (192, 512 and maskable)
+│   └── images/                # hero, collection, product and supplied assets
 ├── ErrorLog/                  # numbered development error records
 ├── .github/assets/            # animated README banner and divider
 └── next.config.ts             # Cache Components, PPR, Turbopack root
@@ -314,6 +317,7 @@ Every issue found during development is recorded in [`ErrorLog/`](ErrorLog/). Th
 | [007](ErrorLog/007-three-clock-deprecated.md) | `THREE.Clock` deprecation warning from R3F's internal render clock | Replaced R3F with a framework-free Three.js scene using `THREE.Timer` |
 | [008](ErrorLog/008-auth-breakpoints-and-notch.md) | Auth notch, split breakpoints, mobile padding and desktop H1 wrapping | Anchored the notch to the frame, restored tablet layouts, tuned card proportions and form width |
 | [009](ErrorLog/009-browser-auth-gate.md) | Client-only session caused control flicker, a protected-route guard race on sign-out and a narrow-screen header overflow risk | Hydration-gated header, sanitized `next` paths, guard-aware sign-out, responsive skeleton and compact icon targets |
+| [010](ErrorLog/010-next-default-tab-icon.md) | Browser tab retained the Next.js icon because the app had no `favicon.ico` or raster app icons | Added AURELLE favicon, SVG and Apple icons plus manifest PNGs and maskable artwork |
 
 <details>
 <summary><strong>001 - Dependency misconfiguration</strong></summary>

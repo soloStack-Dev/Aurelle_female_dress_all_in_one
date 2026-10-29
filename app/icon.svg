@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AURELLE monogram">
+  <rect width="64" height="64" rx="15" fill="#f7f2ea"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="13.5" fill="none" stroke="#161310" stroke-opacity="0.14"/>
+  <path d="M32 12 L48 51 H40.5 L37.2 42.2 H26.8 L23.5 51 H16 L32 12 Z M28.9 35.5 H35.1 L32 25.8 L28.9 35.5 Z" fill="#161310"/>
+  <circle cx="46.5" cy="17" r="4" fill="#d4552d"/>
+</svg>
